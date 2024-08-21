@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<odoo>
+
+        <!-- Partner kanban view inherit -->
+        <record id="rt_helpdesk_res_partner_kanban_view" model="ir.ui.view">
+            <field name="name">rt.helpdesk.res.partner.kanban.view.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.res_partner_kanban_view"/>
+            <field name="priority" eval="10"/>
+            <!-- <field name="groups_id" eval="[(4, ref('rt_helpdesk.rt_helpdesk_group_helpdesk_user'))]"/> -->
+            <field name="arch" type="xml">
+                <field name="mobile" position="after">
+                    <field groups="rt_helpdesk.rt_helpdesk_group_helpdesk_user" name="rt_helpdesk_ticket_count"/>
+                </field>
+
+                <xpath expr="//div[hasclass('oe_kanban_bottom_left')]" position="inside">
+                    <a t-if="record.rt_helpdesk_ticket_count.value > 0" href="#"
+                       groups="rt_helpdesk.rt_helpdesk_group_helpdesk_user"
+                       data-type="object" data-name="rt_helpdesk_action_open_rt_helpdesk_ticket"
+                       class="oe_kanban_action oe_kanban_action_a me-1">
+                        <span class="badge rounded-pill">
+                            <i class="fa fa-fw fa-life-ring" aria-label="Tickets"
+                               role="img" title="Tickets"/>
+                            <t t-out="record.rt_helpdesk_ticket_count.value"/>
+                        </span>
+                    </a>
+                </xpath>
+
+            </field>
+        </record>
+
+        <!-- Add contextual button on partner form view -->
+        <record id="rt_helpdesk_view_partner_form" model="ir.ui.view">
+            <field name="name">rt.helpdesk.view.res.partner.form.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field eval="1" name="priority"/>
+            <!-- <field name="groups_id" eval="[(4, ref('rt_helpdesk.rt_helpdesk_group_helpdesk_user'))]"/> -->
+            <field name="arch" type="xml">
+                <data>
+
+
+                
+                    <div name="button_box" position="inside">
+                        <button groups="rt_helpdesk.rt_helpdesk_group_helpdesk_user" class="oe_stat_button" type="object"
+                            name="rt_helpdesk_action_open_rt_helpdesk_ticket"
+                            icon="fa-life-ring"
+                            context="{'default_partner_id': active_id}">
+                            <field string="Tickets" name="rt_helpdesk_ticket_count" widget="statinfo"/>
+                        </button>
+                    </div>
+                </data>
+            </field>    
+        </record>
+
+</odoo>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<templates xml:space="preserve">
+
+    <t t-name="rt_helpdesk.RtHelpdeskTicketButton">
+        <a class="o-mail-ActivityButton" role="button" t-on-click.prevent.stop="onClick" t-ref="button" t-att-aria-label="title" t-att-title="title">
+            <i class="fa fa-fw fa-lg" t-att-class="buttonClass" role="img"/>
+        </a>
+        <span class="o-mail-ListActivity-summary" t-out="summaryText"/>
+    </t>
+
+    <t t-name="rt_helpdesk.RtHelpdeskTicketListPopover">
+
+
+        <div class="o-mail-ActivityListPopover d-flex flex-column">
+            <div class="overflow-y-auto d-flex flex-column flex-grow-1">
+                <span t-if="Object.keys(props.records).length === 0" 
+                class="p-3 text-center fst-italic text-500 border-bottom fs-6">There are currently no tickets for this document.</span>
+               
+                <t t-foreach="Object.keys(props.records)" t-as="key"  t-key="key_index">
+                    <t t-set="logs" t-value="props.records[key]" />
+                    <t t-set="contextual_class" t-value="key == 'incoming' ? 'danger' : (key == 'outgoing' ? 'success' : 'warning') " />
+
+                    <div class="d-flex bg-100 py-2 border-bottom">
+                        <span t-attf-class="text-{{contextual_class}} fw-bold mx-3"><t t-esc="props.rt_helpdesk_direction_selection[key] || 'Undefined'" /></span>
+                        <span class="flex-grow-1"/>
+                        <span t-attf-class="badge rounded-pill text-bg-{{contextual_class}} mx-3 align-self-center" t-esc="logs.length"/>
+                    </div>
+
+
+
+                    <t t-foreach="logs" t-as="log" t-key="log_index">
+                        <t t-call="rt_helpdesk.RtHelpdeskTicketListPopoverItem"/>
+                    </t>
+                </t>
+
+            </div>
+            <button class="btn btn-secondary p-3 text-center" t-on-click="() => props._onEditTicket()">
+                <i class="fa fa-plus fa-fw me-1"/><strong>Create ticket</strong>
+            </button>
+            <button 
+            t-if="Object.keys(props.records).length &gt; 0"
+            class="btn btn-secondary p-3 text-center mt-1" t-on-click="() => props._onOpenTicketsListView()">
+                <i class="fa fa-list-ul fa-fw me-1"/><strong>Open tickets list view</strong>
+            </button>
+        </div>
+    </t>
+
+
+
+
+
+    <t t-name="rt_helpdesk.RtHelpdeskTicketListPopoverItem">
+        <div class="o-mail-ActivityListPopoverItem d-flex flex-column border-bottom py-2">
+            <div class="overflow-auto d-flex align-items-baseline ms-3 me-1">
+
+                    <b class="text-900 me-2 text-truncate flex-grow-1 flex-basis-0" t-esc="log.ticket_number"/>
+
+                <button
+                class="o-mail-ActivityListPopoverItem-editbtn btn btn-sm btn-success btn-link" 
+                t-on-click="() => props._onEditTicket(log.id)">
+                    <i class="fa fa-pencil"/>
+                </button>
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap mx-3">
+                <div class="mt-1">
+                    <small class="text-truncate" t-esc="log.name"/>
+                </div>
+            </div>
+
+            <div t-if="log.product_id"  class="d-flex align-items-center flex-wrap mx-3">
+                <div class="mt-1">
+                    <small class="text-truncate" t-esc="log.product_id[1]"/>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center flex-wrap mx-3">
+                <div class="mt-1">
+                    <small t-attf-class="text-truncate text-{{contextual_class}}" t-esc="props.rt_helpdesk_direction_selection[key] || 'Undefined' "/>
+                    <small  t-if="log.stage_id" class="mx-1">-</small>
+
+                    <small t-if="log.stage_id" 
+                    t-attf-style="color:{{log.stage_id_color_html}};"
+                    class="fw-bold" t-att-title="log.stage_id[1]" t-esc="log.stage_id[1]"/>
+                </div>
+            </div>
+
+
+            <div t-if="log.user_ids_name"  class="d-flex align-items-center flex-wrap mx-3">
+                <div class="mt-1">
+                    <span class="fa fa-user-o fa-fw me-1 text-center text-muted" role="img" aria-label="Assignees" title="Assignees" />
+                    <small class="text-truncate"><t t-esc="log.user_ids_name" /></small>                    
+                </div>
+            </div>
+            
+            <div t-if="log.date_deadline" class="d-flex align-items-center flex-wrap mx-3">
+                <div class="mt-1">
+                    <span class="fa fa-clock-o fa-fw me-1 text-center text-muted" role="img" aria-label="Deadline" title="Deadline" />
+                    <small  class="text-truncate" t-att-title="log.date_deadline"><t t-esc="log.label_delay" /></small>            
+                </div>
+            </div>
+
+        </div>
+    </t>
+        
+</templates>

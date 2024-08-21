@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="rt_helpdesk.RTHelpdeskKanbanRenderer" owl="1">
+        <div class="rt_helpdesk_content d-flex flex-column h-100 flex-fill overflow-auto">
+            <RTHelpdeskDashboard domain="props.list.domain" />
+            <div class="border-top">
+                <t t-call="web.KanbanRenderer"/>
+            </div>
+        </div>
+    </t>
+</templates>

@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<odoo>
+    <!--  TODO: noupdate 1 when done  -->
+    <data noupdate="0">
+ 
+        
+        <record id="rt_helpdesk_email_template_data_ticket_received" model="mail.template">
+            <field name="name">Ticket: Acknowledge Receipt</field>
+            <field name="model_id" ref="rt_helpdesk.model_rt_helpdesk_ticket" />
+            <field name="subject">Your Ticket: {{ object.ticket_number }}</field>
+            <field name="email_from">{{ (object.team_id.alias_email_from or object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ (object.email_from if not object.sudo().partner_id.email or object.sudo().partner_id.email != object.email_from else '') }}</field>
+            <field name="partner_to">{{ object.sudo().partner_id.id if object.sudo().partner_id.email and object.sudo().partner_id.email == object.email_from else '' }}</field>
+            <field name="email_cc">{{ object.email_cc or '' }}</field>
+            <field name="use_default_to" eval="True" />
+            <field name="body_html" type="html">
+                <div>
+                    Hello <t t-out="object.sudo().partner_id.name or 'Madam/Sir'">Madam/Sir</t>,
+                    <br />
+                    <br />
+                    Thank you for reaching out to us. We are working on your issue <t t-out="object.ticket_number or 'Ticket Number'">Ticket Number</t> and will get back to you soon. Please let us know if you have any more questions. We
+                    will be happy to help.
+                    <br />
+
+                    <!-- <div style="text-align: center; padding: 16px 0px 16px 0px;">
+                        <a style="background-color: #875a7b; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 13px;" t-att-href="object.get_portal_url()">View the ticket</a>
+                    </div>
+
+                    <br /> -->
+                    Thanks,
+                    <br />
+                    <t t-out="object.team_id.name or 'Helpdesk'">Helpdesk</t> Team.
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">{{ object.sudo().partner_id.lang or user.lang or ''}}</field>
+        </record>
+
+        <record id="rt_helpdesk_email_template_data_ticket_resolved" model="mail.template">
+            <field name="name">Ticket: Resolved</field>
+            <field name="model_id" ref="rt_helpdesk.model_rt_helpdesk_ticket" />
+            <field name="subject">Your Ticket: {{ object.ticket_number }}</field>
+            <field name="email_from">{{ (object.team_id.alias_email_from or object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ (object.email_from if not object.sudo().partner_id.email or object.sudo().partner_id.email != object.email_from else '') }}</field>
+            <field name="partner_to">{{ object.sudo().partner_id.id if object.sudo().partner_id.email and object.sudo().partner_id.email == object.email_from else '' }}</field>
+            <field name="email_cc">{{ object.email_cc or '' }}</field>
+            <field name="use_default_to" eval="True" />
+            <field name="body_html" type="html">
+                <div>
+                    Hello <t t-out="object.sudo().partner_id.name or 'Madam/Sir'">Madam/Sir</t>,
+                    <br />
+                    <br />
+                    Your issue <t t-out="object.ticket_number or 'Ticket Number'">Ticket Number</t> is resolved. We are closing the ticket now. If there is anything else you need help with, feel free to reply to this email. We will be happy
+                    to help.
+
+                    <!-- <br />
+
+                    <div style="text-align: center; padding: 16px 0px 16px 0px;">
+                        <a style="background-color: #875a7b; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 13px;" t-att-href="object.get_portal_url()">View the ticket</a>
+                    </div> -->
+
+                    <br />
+                    Thanks,
+                    <br />
+                    <t t-out="object.team_id.name or 'Helpdesk'">Helpdesk</t> Team.
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">{{ object.sudo().partner_id.lang or user.lang or '' }}</field>
+        </record>
+
+        <record id="rt_helpdesk_email_template_data_ticket_apology" model="mail.template">
+            <field name="name">Ticket: Apology</field>
+            <field name="model_id" ref="rt_helpdesk.model_rt_helpdesk_ticket" />
+            <field name="subject">Your Ticket: {{ object.ticket_number }}</field>
+            <field name="email_from">{{ (object.team_id.alias_email_from or object.company_id.email_formatted or user.email_formatted) }}</field>
+            <field name="email_to">{{ (object.email_from if not object.sudo().partner_id.email or object.sudo().partner_id.email != object.email_from else '') }}</field>
+            <field name="partner_to">{{ object.sudo().partner_id.id if object.sudo().partner_id.email and object.sudo().partner_id.email == object.email_from else '' }}</field>
+            <field name="email_cc">{{ object.email_cc or '' }}</field>
+            <field name="use_default_to" eval="True" />
+            <field name="body_html" type="html">
+                <div>
+                    Hello <t t-out="object.sudo().partner_id.name or 'Madam/Sir'">Madam/Sir</t>,
+                    <br />
+                    <br />
+                    We regret to inform you that issue is a mistake on our side. We understand the inconvenience it has caused you and we are doing everything to solve this issue at the earliest.
+                    <br />
+                    <br />
+                    Again, we are sorry and assure you that this will not happen in the future.
+                    <br />
+
+                    <!-- <div style="text-align: center; padding: 16px 0px 16px 0px;">
+                        <a style="background-color: #875a7b; padding: 8px 16px 8px 16px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 13px;" t-att-href="object.get_portal_url()">View the ticket</a>
+                    </div>
+
+                    <br /> -->
+                    Thanks,
+                    <br />
+                    <t t-out="object.team_id.name or 'Helpdesk'">Helpdesk</t> Team.
+                </div>
+            </field>
+            <field name="auto_delete" eval="True"/>
+            <field name="lang">{{ object.sudo().partner_id.lang or user.lang or '' }}</field>
+        </record>
+    </data>
+</odoo>

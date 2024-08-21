@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="rt_helpdesk_view_ticket_stage_tree" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.stage.tree</field>
+        <field name="model">rt.helpdesk.ticket.stage</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle" />
+                <field name="name" />
+                <field name="color_html" widget="color" optional="show" />
+                <field name="partner_stage_name" optional="show" />
+                <field name="partner_stage_color_html" widget="color" optional="show" />
+
+                <field name="mail_template_id" optional="show" />
+                <field name="fold" optional="show" invisible="0" />
+                <field name="is_opt_out_direction_flow" optional="show" />
+                <field name="is_closed" optional="show" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_form" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.stage.form</field>
+        <field name="model">rt.helpdesk.ticket.stage</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <h1><field name="name" placeholder="New" /></h1>
+                    <group>
+                        <group>
+                            <field name="mail_template_id" />
+                            <field name="sequence" />
+                            <field name="is_closed" />
+                        </group>
+
+                        <group>
+                            <field name="fold" invisible="0" />
+                            <field name="color_html" widget="color" />
+
+                            <field name="is_opt_out_direction_flow" />
+                            <label for="is_opt_out_direction_flow" string="" />
+
+                            <div class="font-italic text-muted">
+                                An email will be sent to the customer when the ticket reaches this stage. At that time direction will not change to outgoing
+                            </div>
+                        </group>
+
+                        <group>
+                            <field name="partner_stage_name" />
+                            <field name="partner_stage_color_html" widget="color" />
+                            <label for="partner_stage_name" string="" />
+
+                            <div class="font-italic text-muted"><strong>Customer stage name</strong> and <strong>Color</strong> will displayed in portal and email to the customer rather than stage name.</div>
+                        </group>
+                    </group>
+
+                    <group string="Stage Description">
+                        <group>
+                            <p class="text-muted mt-2" colspan="2">
+                                You can also add a description to help your coworkers understand the meaning and purpose of the stage.
+                            </p>
+                            <field name="description" placeholder="Add a description..." nolabel="1" colspan="2" />
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_kanban" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.stage.kanban</field>
+        <field name="model">rt.helpdesk.ticket.stage</field>
+        <field name="arch" type="xml">
+
+                <kanban class="o_kanban_mobile" sample="1">
+                <field name="name" />
+                <field name="mail_template_id" />
+                 <field name="sequence" widget="handle"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="row">
+                                    <div class="col-12">
+                                            <strong><field name="name" /></strong>
+                                            <br/>
+                                    <span class="text-muted"><field name="mail_template_id" /></span>
+
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                    <span class="text-muted">
+                                        Customer Stage Name:
+                                    </span>
+
+                                    <strong><field name="partner_stage_name" /></strong>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+
+            <!-- <kanban class="o_kanban_mobile" sample="1">
+                <field name="name" />
+                <field name="mail_template_id" />
+                 <field name="sequence" widget="handle"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="o_kanban_record oe_kanban_global_click">
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong><field name="name" /></strong>
+                                    <br />
+                                    <span class="text-muted"><field name="mail_template_id" /></span>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <span class="text-muted">
+                                        Customer Stage Name:
+                                    </span>
+
+                                    <strong><field name="partner_stage_name" /></strong>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban> -->
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_search" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.stage.search</field>
+        <field name="model">rt.helpdesk.ticket.stage</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" />
+                <field name="mail_template_id" />
+                <!--                <filter string="Archived" name="archived" domain="[('active', '=', False)]"/>
+-->
+            </search>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_action" model="ir.actions.act_window">
+        <field name="name">Ticket Stages</field>
+        <field name="res_model">rt.helpdesk.ticket.stage</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No stages found. Let's create one!
+            </p>
+            <p>
+                Track the progress of your ticket from their creation to their closing.
+            </p>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_action_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1" />
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="rt_helpdesk_view_ticket_stage_tree" />
+        <field name="act_window_id" ref="rt_helpdesk_view_ticket_stage_action" />
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_action_kanban" model="ir.actions.act_window.view">
+        <field name="sequence" eval="2" />
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="rt_helpdesk_view_ticket_stage_kanban" />
+        <field name="act_window_id" ref="rt_helpdesk_view_ticket_stage_action" />
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_stage_action_form" model="ir.actions.act_window.view">
+        <field name="sequence" eval="3" />
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="rt_helpdesk_view_ticket_stage_form" />
+        <field name="act_window_id" ref="rt_helpdesk_view_ticket_stage_action" />
+    </record>
+</odoo>

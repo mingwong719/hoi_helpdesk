@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top menu item -->
+    <menuitem id="rt_helpdesk_menu_root" name="Helpdesk" web_icon="rt_helpdesk,static/images/menu_icon/rt_helpdesk_menu_icon.png" sequence="30" />
+
+    <menuitem id="rt_helpdesk_ticket_menu" name="Tickets" action="rt_helpdesk_action_ticket_tree_view" parent="rt_helpdesk_menu_root" sequence="2" />
+
+    <!-- Menu item for configuration -->
+
+    <menuitem id="rt_helpdesk_menu_config" name="Configuration" parent="rt_helpdesk_menu_root" groups="rt_helpdesk.rt_helpdesk_group_helpdesk_manager" sequence="100" />
+
+    <menuitem id="rt_helpdesk_menu_config_ticket" name="Ticket" parent="rt_helpdesk_menu_config" sequence="100" />
+
+    <menuitem action="rt_helpdesk_view_ticket_stage_action" id="rt_helpdesk_view_ticket_stage_menu" name="Ticket Stages" parent="rt_helpdesk_menu_config_ticket" sequence="9" />
+
+    <menuitem action="rt_helpdesk_view_ticket_type_action" id="rt_helpdesk_view_ticket_type_menu" name="Ticket Types" parent="rt_helpdesk_menu_config_ticket" sequence="11" />
+
+    <menuitem action="rt_helpdesk_view_ticket_origin_action" id="rt_helpdesk_view_ticket_origin_menu" name="Ticket Origins" parent="rt_helpdesk_menu_config_ticket" sequence="11" />
+
+    <menuitem action="rt_helpdesk_view_ticket_tag_action" id="rt_helpdesk_view_ticket_tag_menu" name="Ticket Tags" parent="rt_helpdesk_menu_config_ticket" sequence="11" />
+
+    <menuitem action="rt_helpdesk_view_ticket_team_action" id="rt_helpdesk_view_ticket_team_menu" name="Helpdesk Teams" parent="rt_helpdesk_menu_config" sequence="11" />
+</odoo>

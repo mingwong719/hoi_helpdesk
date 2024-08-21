@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="rt_helpdesk_view_ticket_origin_tree" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.origin.tree</field>
+        <field name="model">rt.helpdesk.ticket.origin</field>
+        <field name="arch" type="xml">
+            <tree string="Origin" editable="bottom" sample="1">
+				<field name="sequence" widget="handle"/>
+				<field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_origin_form" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.origin.form</field>
+        <field name="model">rt.helpdesk.ticket.origin</field>
+        <field name="arch" type="xml">
+            <form string="Origin">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+						<field name="sequence"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_origin_action" model="ir.actions.act_window">
+        <field name="name">Ticket Origins</field>
+        <field name="res_model">rt.helpdesk.ticket.origin</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new ticket origin
+            </p>
+        </field>
+    </record>
+
+
+
+</odoo>

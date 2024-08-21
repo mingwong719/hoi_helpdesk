@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Ticket Search View -->
+    <record id="rt_helpdesk_view_ticket_search" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.search</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <search string="Tickets">
+                <field name="ticket_number" />
+
+                <field name="id" string="Ticket ID" />
+                <field name="name" />
+                <field name="description_html" />
+
+                <field name="tag_ids" string="Tag" filter_domain="[('tag_ids', 'ilike', self)]" />
+                <field name="user_ids" context="{'active_test': False}" />
+                <field name="ticket_type_id" />
+                <field name="stage_id" />
+                <field name="priority" invisible="1" />
+                <field name="partner_id" operator="child_of" />
+                <field name="product_id" />
+                <field name="direction" />
+                <field name="origin_id" />
+                <field name="company_id" />
+                <!-- Date Filters -->
+
+                <field name="activity_state" />
+
+                <field name="res_model_id"/>
+                <field name="res_name"/>
+
+                <field name="internal_note_html" />
+
+
+                <filter string="My Tickets" name="filter_my_tickets" domain="[('user_ids', 'in', uid)]" />
+                <filter string="Followed" name="filter_message_is_follower" domain="[('message_is_follower', '=', True)]" />
+
+                <filter string="Unassigned Tickets" name="filter_unassigned_tickets" domain="[('user_ids', '=', False)]" />
+                <separator />
+                <filter string="Starred" name="filter_starred" domain="[('priority', 'in', [1, 2, 3])]" />
+                <separator />
+                <filter string="Late Tickets" name="filter_late_tickets" domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" />
+                <separator />
+                <filter string="Very High Priority" name="filter_priority_very_high" domain="[('priority', '=', 3)]" />
+                <filter string="High Priority" name="filter_priority_high" domain="[('priority', '=', 2)]" />
+                <filter string="Medium Priority" name="filter_priority_medium" domain="[('priority', '=', 1)]" />
+                <filter string="Low Priority" name="filter_priority_low" domain="[('priority', '=', 0)]" />
+
+                <separator />
+                <filter string="Unread Messages" name="filter_message_needaction" domain="[('message_needaction','=',True)]" />
+
+                <separator />
+
+                <filter string="Open" name="filter_ticket_is_open" domain="[('stage_id.is_closed','=',False)]" />
+                <filter string="Closed" name="filter_ticket_is_close" domain="[('stage_id.is_closed','=',True)]" />
+                <separator />
+                <filter string="Active" name="filter_active" domain="[('active', '=',True)]" />
+                <filter string="Archived" name="filter_inactive" domain="[('active', '=', False)]" />
+                <separator />
+
+                <filter string="Incoming" name="filter_direction_incoming" domain="[('direction','=','incoming')]" />
+                <filter string="Outgoing" name="filter_direction_outgoing" domain="[('direction','=','outgoing')]" />
+                <filter string="Undefined direction" name="filter_direction_undefined" domain="[('direction','=',False)]" />
+               
+
+ <separator />
+
+                <filter string="Creation Date" name="filter_creation_date" date="create_date" />
+                <filter string="Last Message On" name="filter_last_message_on" date="last_message_on" />
+                <filter string="Deadline" name="filter_date_deadline" date="date_deadline" />
+                <filter string="Ending Date" name="filter_date_end" date="date_end" />
+                <separator />
+                <filter string="Created on last 24h" name="filter_create_date_last_24hour" domain="[('create_date','&gt;', (context_today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d') )]" />
+                <filter
+                    string="Created on this week"
+                    name="filter_create_date_this_week"
+                    domain="[
+                        ('create_date', '>=', (datetime.datetime.combine(context_today() + relativedelta(weeks=-1,days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')),
+                        ('create_date', '&lt;', (datetime.datetime.combine(context_today() + relativedelta(days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S'))]"
+                />
+
+                <separator />
+                <filter string="Last Message On last 24h" name="filter_last_message_on_last_24hour" domain="[('last_message_on','&gt;', (context_today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d') )]" />
+                <filter
+                    string="Last Message On this week"
+                    name="filter_last_message_on_this_week"
+                    domain="[
+                        ('last_message_on', '>=', (datetime.datetime.combine(context_today() + relativedelta(weeks=-1,days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')),
+                        ('last_message_on', '&lt;', (datetime.datetime.combine(context_today() + relativedelta(days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S'))]"
+                />
+                <separator />
+
+                <filter string="Ending Date last 24h" name="filter_date_end_last_24hour" domain="[('date_end','&gt;', (context_today() - datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d') )]" />
+                <filter
+                    string="Ending Date this week"
+                    name="filter_date_end_this_week"
+                    domain="[
+                        ('date_end', '>=', (datetime.datetime.combine(context_today() + relativedelta(weeks=-1,days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S')),
+                        ('date_end', '&lt;', (datetime.datetime.combine(context_today() + relativedelta(days=1,weekday=0), datetime.time(0,0,0)).to_utc()).strftime('%Y-%m-%d %H:%M:%S'))]"
+                />
+                <separator />
+
+                <filter
+                    invisible="0"
+                    string="Late Activities"
+                    name="filter_activities_overdue"
+                    domain="[('my_activity_date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                    help="Show all records which has next action date is before today"
+                />
+                <filter invisible="0" string="Today Activities" name="filter_activities_today" domain="[('my_activity_date_deadline', '=', context_today().strftime('%Y-%m-%d'))]" />
+                <filter invisible="0" string="Future Activities" name="filter_activities_upcoming_all" domain="[('my_activity_date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]" />
+
+				
+                <filter string="Overdue/Late Tickets" name="filter_tickets_overdue" domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which has next action date is before today" />
+                <filter string="Today Tickets" name="filter_tickets_today" domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]" help="Show all records which has action date today" />
+                <filter string="Planned/Future Tickets" name="filter_tickets_upcoming" domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))]" help="Show all records which has next action date is after today" />
+
+
+                <group expand="0" string="Group By">
+                    <filter string="Stage" name="group_by_stage_id" context="{'group_by': 'stage_id'}" />
+                    <filter string="Assignees" name="group_by_user_ids" context="{'group_by': 'user_ids'}" />
+                    <filter string="Customer" name="group_by_partner_id" context="{'group_by': 'partner_id'}" />
+                    <filter string="Deadline" name="group_by_date_deadline" context="{'group_by': 'date_deadline'}" />
+                    <filter string="Creation Date" name="group_by_create_date" context="{'group_by': 'create_date'}" />
+                    <filter string="Last Message On" name="group_by_last_message_on" context="{'group_by': 'last_message_on'}" />
+                    <filter string="Deadline" name="group_by_date_deadline" context="{'group_by': 'date_deadline'}" />
+                    <filter string="Ending Date" name="group_by_date_end" context="{'group_by': 'date_end'}" />
+                    <filter string="Team" name="group_by_team_id" context="{'group_by':'team_id'}" />
+                    <filter string="Priority" name="group_by_priority" context="{'group_by': 'priority'}" />
+                    <filter string="Ticket Type" name="group_by_ticket_type_id" context="{'group_by': 'ticket_type_id'}" />
+                    <filter string="Tags" name="group_by_tag_ids" context="{'group_by': 'tag_ids'}" />
+                    <filter string="Product" name="group_by_product_id" context="{'group_by': 'product_id'}" />
+                    <filter string="Direction" name="group_by_direction" context="{'group_by': 'direction'}" />
+                    <filter string="Origin" name="group_by_origin_id" context="{'group_by': 'origin_id'}" />
+                    <filter string="Company" name="group_by_company_id" context="{'group_by': 'company_id'}" />
+
+                    <filter string="Document Model" name="groupby_res_model_id" context="{'group_by': 'res_model_id'}" />
+                    <filter string="Document Name" name="groupby_res_name" context="{'group_by': 'res_name'}" />            
+    </group>
+
+                <searchpanel>
+                    <field name="stage_id" select="multi" icon="fa-retweet" enable_counters="1" />
+                    <field name="user_ids" select="multi" icon="fa-user" enable_counters="1" />
+                    <field name="ticket_type_id" select="multi" icon="fa-th-large" enable_counters="1" />
+                    <field name="priority" select="multi" icon="fa-arrow-up" enable_counters="1" />
+                    <field name="res_model_id" select="multi" icon="fa-file-text" enable_counters="1" />
+                    <field name="team_id" select="multi" enable_counters="1" />
+                    <field name="origin_id" select="multi" enable_counters="1" />
+                    <field name="tag_ids" select="multi" icon="fa-tags" enable_counters="1" />
+                    <field name="product_id" select="multi" enable_counters="1" />  
+              </searchpanel>
+
+  
+            </search>
+        </field>
+    </record>
+
+    <!-- Ticket Kanban View
+                js_class="rt_helpdesk_kanban_ticket_dashboard" 
+     -->
+    <record id="rt_helpdesk_view_ticket_kanban" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.kanban</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id"  
+            js_class="rt_helpdesk_kanban_ticket_dashboard" 
+            class="o_kanban_small_column"  sample="1">
+                <field name="color" />
+                <field name="color_html" />
+                <field name="active" />
+                <field name="activity_state" />
+                <field name="is_closed" />
+                <field name="sequence" />
+                <field name="ticket_number" />
+                <field name="name" />
+                <field name="product_id" />
+                <field name="ticket_type_id" />
+                <field name="team_id" />
+                <field name="user_ids" />
+                <field name="priority" />
+                <field name="origin_id" />
+                <field name="partner_id" />
+                <field name="email_from" />
+                <field name="activity_ids" />
+                <field name="date_deadline" />
+                <field name="tag_ids" />
+                <field name="stage_id" options='{"group_by_tooltip": {"description": "Description"}}'/>
+                <field name="direction" />
+                <field name="last_message_on" />
+                <field name="create_date" />
+                <field name="date_end" />
+                <field name="res_model" />
+                <field name="res_name" />
+                <templates>
+                    <t t-name="kanban-menu">
+                        <ul class="oe_kanban_colorpicker" data-field="color"/>
+                    </t>
+
+                    <t t-name="kanban-box">
+                        <t t-set="is_direction_value_false" t-value="record.direction.raw_value == false" />
+                        <div t-attf-class="#{!selection_mode ? kanban_color(record.color.raw_value) : ''} oe_kanban_global_click oe_kanban_card d-flex flex-column {{is_direction_value_false ? 'bg-warning' : ' '}}">
+
+                            <div class="o_kanban_record_top mb8">
+                                <div class="o_kanban_record_headings">
+                                    <div class="o_kanban_card_header_title">
+                                        <strong class="o_kanban_record_title"
+                                        ><span>
+                                            <field name="ticket_number" />
+                                        </span>
+                                    </strong>
+                                    </div>
+                                </div>
+                                <strong>
+                                    <field name="direction" widget="label_selection" options="{'classes': {'incoming': 'danger', 'outgoing': 'success'}}" />                               
+                                </strong>
+                            </div>
+
+                            <div class="oe_kanban_content flex-grow-1">
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title"><field name="name"/></strong>
+                                </div>
+                                <div class="o_kanban_record_subtitle">
+                                    <t t-if="record.partner_id.value">
+                                        <span>
+                                            <field name="partner_id" />
+                                        </span>
+                                    </t>
+                                    <t t-else="record.email_from.raw_value">
+                                        <span><field name="email_from" /></span>
+                                    </t>                                    
+                                </div>
+
+                                <div class="mt-1">
+                                    <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                                </div>
+
+                                <div class="oe_kanban_footer">
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <field name="priority" widget="priority"/>
+                                            <field name="activity_ids" widget="kanban_activity"/>
+                                        </div>
+                                        <div class="oe_kanban_bottom_right">
+                                            <field name="user_ids" widget="many2many_avatar_user" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+
+
+                            <div class="o_kanban_record_subtitle">
+                                <strong>Team: </strong><field name="team_id" /> <br />
+                                <strong>Ticket Type: </strong><field name="ticket_type_id" /> <br />
+                                <strong>Product: </strong><field name="product_id" /> <br />
+                                <strong>Last Message On: </strong><field name="last_message_on" /> - <field name="last_message_on" widget="remaining_days" /> <br />
+
+                                <strong>Deadline: </strong><field name="date_deadline" /> - <field name="date_deadline" widget="remaining_days" /> <br />
+
+                                <strong>Created on: </strong><field name="create_date" /> - <field name="create_date" widget="remaining_days" /> <br />
+
+                                <strong>Ending Date: </strong><field name="date_end" /> - <field name="date_end" widget="remaining_days" /> <br />
+                                <t t-if="record.res_name.raw_value">                              
+                                        <strong>Document Name: </strong><field name="res_name" />
+                                        
+                                  
+                                            <a role="button" style="padding: 0rem 0rem;"
+                                                name="action_open_document"
+                                                type="object" class="ms-2 btn text-primary">
+                                                <span title="Document">
+                                                    <i class="fa fa-file-text" role="img"
+                                                        aria-label="Document" /> </span>
+                                            </a>                                                                       
+                                        
+                                        <br />
+                                </t>
+                            </div>
+
+                            <div class="o_kanban_record_subtitle">
+                                <span class="badge badge-pill" t-attf-style="{{'background:' + record.color_html.raw_value}};color:#fff">
+                                    <field name="stage_id" />
+                                </span>
+                            </div>
+
+                            <div class="clearfix"/>
+
+                            <!-- <div class="oe_clear"></div> -->
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <!-- Ticket Tree View
+    js_class="rt_helpdesk_ticket_list_view" 
+        js_class="rt_helpdesk_list_ticket_dashboard"
+     -->
+    <record id="rt_helpdesk_view_ticket_tree" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.tree</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <tree string="Tickets" 
+            js_class="rt_helpdesk_list_ticket_dashboard"
+            multi_edit="1" decoration-warning="direction == False" decoration-success="direction == 'outgoing'" decoration-danger="direction == 'incoming'">
+                <field name="is_closed" column_invisible="1" />
+                <!-- <field name="sequence" widget="handle" /> -->
+                <field name="ticket_number" optional="show" />
+                <field name="name" />
+
+                <field name="product_id" optional="hide" />
+
+                <field name="ticket_type_id" optional="hide" />
+                <field name="team_id" optional="hide" />
+                <field name="user_ids" optional="show" widget="many2many_avatar_user" domain="[('active', '=', True)]" />
+
+                <field name="priority" widget="priority" optional="show" />
+                <field name="origin_id" optional="show" />
+                <field name="partner_id" optional="show" />
+                <field name="email_from" optional="hide" />
+                <field name="phone" optional="hide" />
+                <field name="mobile" optional="hide" />
+
+                <field name="activity_ids" widget="list_activity" optional="show" />
+                <field name="date_deadline" optional="hide" widget="remaining_days" />
+
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" optional="show" />
+                <field name="stage_id" optional="show" decoration-bf="1" />
+                <field name="direction" optional="show" decoration-success="direction == 'outgoing'" decoration-danger="direction == 'incoming'" widget="badge" />
+
+                <field name="last_message_on" optional="show" />
+                <field name="last_message_on" string="Last Message On (Days)" optional="hide" widget="remaining_days" />
+                <field name="create_date" optional="show" />
+                <field name="create_date" string="Created on (Days)" optional="hide" widget="remaining_days" />
+
+                <field name="date_end" optional="hide" />
+                <field name="date_end" string="Ending Date (Days)" optional="hide" widget="remaining_days" />
+
+                <field name="res_name" optional="show" />
+                <field name="res_model_id" optional="hide" readonly="1"/>
+
+                <field name="active" optional="hide" />
+                <field name="is_closed" optional="hide" />
+
+
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_form" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.form</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <form string="Tickets">
+                <header>
+                    <!-- <field name="stage_id" widget="statusbar" 
+                    class="o_field_statusbar"
+                    options="{'clickable': '1', 'fold_field': 'fold'}" /> -->
+
+                    <field name="stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active"/>
+
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_document" string="Open Document" type="object" class="oe_link" icon="fa-file-text-o" 
+                        invisible="not res_model or res_id == 0"/>
+
+                        <!-- <button name="test_action_open_document" string="Test Open Document" type="object" class="oe_link" 
+                        icon="fa-file-text-o"  /> -->
+
+
+                    </div>
+
+                    <!-- <div class="badge-pill badge-danger float-right" attrs="{'invisible': [('direction', '!=', 'incoming')]}">Incoming</div>
+                    <div class="badge-pill badge-success float-right" attrs="{'invisible': [('direction', '!=', 'outgoing')]}">Outgoing</div>
+                    <div class="badge-pill badge-warning float-right" attrs="{'invisible': [('direction', '!=', False)]}">Undefined</div> -->
+
+                    <!-- <div class="oe_right">
+                       
+                            <span class="badge text-bg-warning float-end">Canceled</span>
+                        
+                    </div> -->
+
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" invisible="active" />
+
+                    <div class="oe_title">
+                       
+                        <h1>
+                            <field class="oe_inline" name="ticket_number" readonly="1" />
+                            <!-- <span class="badge text-bg-danger">111 Expiration Alert</span>  -->
+
+                            <span class="ms-3 badge text-bg-danger"  invisible="direction != 'incoming'">Incoming</span>
+                            <span class="ms-3 badge text-bg-success" invisible="direction != 'outgoing'">Outgoing</span>
+                            <span class="ms-3 badge text-bg-warning"  invisible="direction != False">Undefined</span>                                                                                    
+                        </h1>
+                              
+                    </div>
+
+
+
+                    <group name="ticket_name_group">
+                        <field name="name" placeholder="e.g. Broken Printer" />
+                    </group>
+
+                    <group name="ticket_header">
+                        <group name="partner_details">
+                            <field name="ticket_type_id" />
+                            <field name="active" invisible="1" />
+                            <field name="team_id" options="{'no_open': True, 'no_create': True}" />
+
+                            <field name="user_ids" options="{'no_open': True}" widget="many2many_avatar_user" />
+
+                            <field name="product_id" />
+                            <field name="origin_id" />
+                            <field name="display_name" invisible="1" />
+
+                            <!-- Document Fields -->
+                            <field name="res_model" invisible="1" />
+                            <field name="res_model_id" invisible="1" />
+                            <field name="res_id" invisible="1" widget="integer" />
+                            <field name="res_name" />
+                        </group>
+                        <group name="ticket_details">
+                            <!-- Preload all the partner's information -->
+                            <field
+                                name="partner_id"
+                                widget="res_partner_many2one"
+                                context="{
+                                        'show_vat': True
+                                    }"
+                            />
+                            <field name="email_from" />
+                            <!-- TODO: remove when done  below 3 field -->
+                            <!-- <field name="email_cc" groups="base.group_no_one"/>
+                            <field name="email_normalized" />
+                            <field name="access_token" /> -->
+                            
+                            <field name="ticket_is_opt_out_direction_flow_flag" />
+                            <field name="phone" widget="phone" />
+                            <field name="mobile" widget="phone" />
+
+                            <field name="priority" widget="priority" />
+                            <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" />
+                            <field name="direction" />
+
+                            <field name="last_message_on" />
+                            <field name="date_deadline" />
+                            <field name="is_closed" invisible="1" />
+
+
+                            <field name="color_html" widget="color" invisible="1"/>
+
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page name="ticket_description_page" string="Description">
+                            <field name="description_html" class="oe-bordered-editor" type="html" placeholder="Description of the ticket..." />
+                        </page>
+
+                        <page name="internal_note_page" string="Internal Notes">
+                            <field name="internal_note_html" class="oe-bordered-editor" type="html" placeholder="Internal note..."/>
+                        </page>
+						
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" />
+                    <field name="activity_ids" />
+                    <field name="message_ids" options="{'post_refresh': True}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_calendar" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.calendar</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <calendar 
+            date_start="last_message_on" 
+            string="Tickets" 
+            hide_time="true"
+            mode="month" 
+            color="ticket_type_id" 
+            event_limit="5" quick_create="0">
+                <field name="name" />
+                <field name="ticket_type_id" filters="1"  />
+                <field name="direction" filters="1" />
+                <field name="stage_id" filters="1"  invisible="not stage_id"/>
+                <field name="product_id" filters="1"  invisible="not product_id" />
+                <field name="origin_id" filters="1" invisible="not origin_id" />
+                <field name="user_ids" widget="many2many_avatar_user" invisible="not user_ids"/>
+                <field name="partner_id" avatar_field="avatar_128" invisible="not partner_id"/>
+                <field name="priority" widget="priority" />
+                <field name="date_deadline" />
+                <field name="last_message_on" />
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" invisible="not tag_ids"/>                
+                <field name="res_model_id" filters="1" invisible="not res_model_id" />
+                <field name="res_name" invisible="not res_model_id"/>
+
+  </calendar>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_pivot" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.pivot</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <pivot string="Tickets" sample="1">
+                <field name="last_message_on" interval="day" type="row" />
+                <field name="stage_id" type="col" />
+                <field name="color" invisible="1" />
+                <!-- <field name="sequence" invisible="1" /> -->
+            </pivot>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_graph" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.graph</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <graph string="Tickets" sample="1">
+                <field name="last_message_on" />
+                <field name="stage_id" />
+                <field name="color" invisible="1" />
+                <!-- <field name="sequence" invisible="1" /> -->
+            </graph>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_activity" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.activity</field>
+        <field name="model">rt.helpdesk.ticket</field>
+        <field name="arch" type="xml">
+            <activity string="Tickets">
+                <field name="user_ids" />
+                <field name="partner_id" />
+                <field name="color_html" />
+                <field name="direction" />
+                <templates>
+                    <div t-name="activity-box"  t-attf-class="justify-content-between gap-2  {{record.direction.raw_value == false ? 'bg-warning' : ' '}}">
+                        <div class="flex-shrink-1">
+                            <field name="ticket_number" class="o_text_block o_text_bold" />
+                            <field name="name" display="full" class="o_text_block"/>
+                            <div t-att-title="record.partner_id.value">
+                                <field t-if="record.partner_id.value" name="partner_id" muted="1" class="o_text_block"/>
+                            </div>
+                            <span class="badge badge-pill" t-attf-style="{{'background:' + record.color_html.raw_value}};color:#fff">
+                                <field name="stage_id"  class="o_text_block" />
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 flex-grow-1">
+                            <field name="direction" widget="label_selection"  class="align-self-center" options="{'classes': {'incoming': 'danger', 'outgoing': 'success'}}" />
+                            <field name="user_ids" widget="many2many_avatar_user" class="o_many2many_avatar_user_no_wrap"/>
+                        </div>
+                    </div>
+                </templates>        
+            </activity>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_action_ticket_tree_view" model="ir.actions.act_window">
+        <field name="name">Tickets</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">rt.helpdesk.ticket</field>
+        <field name="view_mode">tree,kanban,form,calendar,pivot,graph,activity</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new ticket
+            </p>
+        </field>
+    </record>
+</odoo>

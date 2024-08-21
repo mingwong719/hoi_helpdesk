@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="rt_helpdesk.RTHelpdeskListRenderer" owl="1">
+        <div class="rt_helpdesk_content h-100 overflow-auto">
+            <RTHelpdeskDashboard domain="props.list.domain"/>
+            <div class="overflow-auto">
+                <t t-call="web.ListRenderer"/>
+            </div>
+        </div>
+    </t>
+</templates>

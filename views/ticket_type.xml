@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="rt_helpdesk_view_ticket_type_tree" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.type.tree</field>
+        <field name="model">rt.helpdesk.ticket.type</field>
+        <field name="arch" type="xml">
+            <tree string="Type" editable="bottom" sample="1">
+				<field name="sequence" widget="handle"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_type_form" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.type.form</field>
+        <field name="model">rt.helpdesk.ticket.type</field>
+        <field name="arch" type="xml">
+            <form string="Type">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+						<field name="sequence"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_type_action" model="ir.actions.act_window">
+        <field name="name">Ticket Types</field>
+        <field name="res_model">rt.helpdesk.ticket.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new ticket type
+            </p>
+        </field>
+    </record>
+
+
+
+</odoo>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="rt_helpdesk_view_ticket_tag_tree" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.tag.tree</field>
+        <field name="model">rt.helpdesk.ticket.tag</field>
+        <field name="arch" type="xml">
+            <tree string="Tags" editable="bottom" sample="1">
+				<field name="sequence" widget="handle"/>
+				<field name="name"/>
+                <field name="color" widget="color_picker" />				
+            </tree>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_tag_form" model="ir.ui.view">
+        <field name="name">rt.helpdesk.view.ticket.tag.form</field>
+        <field name="model">rt.helpdesk.ticket.tag</field>
+        <field name="arch" type="xml">
+            <form string="Tags">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Services"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="color" required="True" widget="color_picker"/>
+							<field name="sequence"/>                        
+						</group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="rt_helpdesk_view_ticket_tag_action" model="ir.actions.act_window">
+        <field name="name">Ticket Tags</field>
+        <field name="res_model">rt.helpdesk.ticket.tag</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new ticket tag
+            </p>
+        </field>
+    </record>
+
+
+
+</odoo>

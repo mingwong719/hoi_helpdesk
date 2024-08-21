@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+<!-- 
+====================================
+breadcrumbs
+====================================
+-->
+
+
+        <template id="rt_helpdesk_portal_my_home_menu_ticket" name="Portal layout : helpdesk tickets menu entries" inherit_id="portal.portal_breadcrumbs" priority="50">
+            <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+                <li t-if="page_name == 'rt_helpdesk_page_name_ticket'" t-attf-class="breadcrumb-item #{'active ' if not rt_helpdesk_record_ticket else ''}">
+                    <a t-if="rt_helpdesk_record_ticket" t-attf-href="/my/rt_helpdesk/tickets?{{ keep_query() }}">Tickets</a>
+                    <t t-else="">Tickets</t>
+                </li>
+                <li t-if="rt_helpdesk_record_ticket" class="breadcrumb-item active text-truncate">
+                    <span t-field="rt_helpdesk_record_ticket.ticket_number" />
+                  <!--  <t t-esc="rt_helpdesk_record_ticket.name" />-->
+                </li>
+            </xpath>
+        </template>
+
+<!-- 
+====================================
+My Home Entries
+====================================
+-->
+
+        <template id="rt_helpdesk_portal_my_home_ticket" name="Show Helpdesk Tickets" customize_show="True" inherit_id="portal.portal_my_home" priority="50">
+            <xpath expr="//div[hasclass('o_portal_docs')]" position="before">
+                <t t-set="portal_service_category_enable" t-value="True"/>
+            </xpath>
+            <div id="portal_service_category" position="inside">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="icon" t-value="'/rt_helpdesk/static/images/portal_home_icon/rt_helpdesk_portal_icon.png'"/>
+                    <t t-set="title">Tickets</t>
+                    <t t-set="text">Follow, view your helpdesk tickets</t>
+                    <t t-set="url" t-value="'/my/rt_helpdesk/tickets'"/>
+                    <t t-set="placeholder_count" t-value="'rt_helpdesk_ticket_count'"/>
+                </t>
+            </div>
+
+        </template>
+
+
+<!-- 
+====================================
+Tickets List or Tree view
+====================================
+-->
+
+        <template id="portal_my_tickets" name="My Tickets">
+            <t t-call="portal.portal_layout">
+
+                <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Tickets</t>
+                </t>
+                <div t-if="not grouped_tickets" class="alert alert-info">
+                    There are currently no Ticket for your account.
+                </div>
+
+                <t t-call="portal.portal_table">
+                    <thead>
+                        <tr>
+                            <th>Ticket #</th>
+                            <th>Subject</th>                            
+                            <th class="text-end">Creation Date</th>
+                            <th t-if="groupby != 'stage'" colspan="5" class="text-end">Stage</th>
+                        </tr>
+                    </thead>
+                    <t t-foreach="grouped_tickets" t-as="tickets">
+                        <tbody t-if="tickets">
+                            <tr t-if="not groupby == 'none'" class="table-light">
+                                <th t-if="groupby == 'stage'" colspan="5">
+                                    <span t-if="tickets[0].sudo().stage_id"  class="text-truncate" t-field="tickets[0].sudo().stage_id.partner_stage_name"/>
+                                    <span t-else="">No Stage</span>                                
+                                </th>
+                            </tr>
+                        </tbody>
+                        <tbody t-if="tickets">
+                            <t t-foreach="tickets" t-as="ticket">
+                                <tr>
+                                    <td class="text-start" >
+                                        <a t-att-href="ticket.get_portal_url()">
+                                            <span t-att-title="ticket.ticket_number" t-field="ticket.ticket_number"/>
+                                        </a>                                        
+                                    </td>
+                                    <td>
+                                        <a t-att-href="ticket.get_portal_url()">
+                                            <span t-att-title="ticket.name" t-field="ticket.name"/>
+                                        </a>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-field="ticket.create_date" t-options='{"widget": "datetime", "hide_seconds": True}'/>
+                                    </td>
+
+                                    <td t-if="groupby != 'stage'" class="text-end lh-1">
+                                        <span t-if="ticket.stage_id" 
+                                            class="badge rounded-pill fw-normal o_text_overflow" 
+                                            t-attf-style="#{'background: %s' %(ticket.stage_id.partner_stage_color_html)};color:#fff"
+                                            title="Current stage of the ticket" 
+                                            t-field="ticket.stage_id.partner_stage_name" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+
+
+
+
+
+<!-- 
+====================================
+Tickets Page or Form View
+====================================
+-->
+
+    <template id="portal_my_ticket_page" name="My Ticket Page">
+        <t t-call="portal.portal_layout">
+<!--            <t t-set="wrapwrap_classes" t-value="'o_portal_bg_dark'"/>-->
+
+            <t t-call="portal.portal_record_layout">
+                <t t-set="card_header">
+
+                    <div class="row no-gutters">
+                        <div class="col-12">
+                            <h5 class="d-flex mb-1 mb-md-0 row">
+                                <div class="col-9">
+                                    <span t-field="rt_helpdesk_record_ticket.name"/>
+                                </div>
+                                <div class="col-3 text-end">
+                                    <small class="text-right">Stage:</small>
+                                    <span t-if="rt_helpdesk_record_ticket.stage_id" 
+t-field="rt_helpdesk_record_ticket.stage_id.partner_stage_name" 
+class=" badge badge-pill badge-info" 
+t-attf-style="#{'background: %s' %(rt_helpdesk_record_ticket.stage_id.partner_stage_color_html)};color:#fff"
+title="Current stage of this ticket"/>
+                                </div>
+                            </h5>
+                        </div>
+                    </div>
+
+                </t>
+                <t t-set="card_body">
+
+        <div class="mb-3 pb-2 pt-2">
+          <h2 class="my-0">
+              Ticket Number: <em t-field="rt_helpdesk_record_ticket.ticket_number"/>
+            </h2>
+        </div>
+
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Creation Date: </strong>
+                        <span class="col-lg-10" t-field="rt_helpdesk_record_ticket.create_date" t-options='{"widget": "date"}'/>
+                    </div>
+
+                    <div class="row mb-3" t-if="rt_helpdesk_record_ticket.partner_id">
+                        <strong class="col-lg-2">Customer: </strong>
+                        <div class="col-lg-10">
+                            <div class="row">
+                                <div class="col flex-grow-0 pr-3" t-if="rt_helpdesk_record_ticket.partner_id.avatar_1024">
+                                    <img class="rounded-circle o_portal_contact_img" t-attf-src="#{image_data_uri(rt_helpdesk_record_ticket.partner_id.avatar_1024)}" alt="Contact"/>
+                                </div>
+                                <div class="col pl-sm-0 my-auto">
+                                    <div t-field="rt_helpdesk_record_ticket.partner_id" t-options='{"widget": "contact", "fields": ["name"], "no_marker": true}'/>
+<!--									<a t-attf-href="mailto:{{ticket.partner_id.email}}" t-if="ticket.partner_id.email"><div t-field="ticket.partner_id" t-options='{"widget": "contact", "fields": ["email"]}'/></a>
+-->                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Email From: </strong>
+                        <span class="col-lg-10">
+                            <a t-attf-href="mailto:{{rt_helpdesk_record_ticket.email_from}}" t-if="rt_helpdesk_record_ticket.email_from">
+                                <span class="col-lg-10" t-field="rt_helpdesk_record_ticket.email_from"/>
+                            </a>
+                        </span>
+                    </div>
+
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Phone: </strong>
+                        <span class="col-lg-10">
+                            <a t-attf-href="tel:{{rt_helpdesk_record_ticket.phone}}" t-if="rt_helpdesk_record_ticket.phone">
+                                <span class="col-lg-10" t-field="rt_helpdesk_record_ticket.phone"/>
+                            </a>
+                        </span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Mobile: </strong>
+                        <span class="col-lg-10">
+                            <a t-attf-href="tel:{{rt_helpdesk_record_ticket.mobile}}" t-if="rt_helpdesk_record_ticket.mobile">
+                                <span class="col-lg-10" t-field="rt_helpdesk_record_ticket.mobile"/>
+                            </a>
+                        </span>
+                    </div>
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Document Name: </strong>
+                        <span class="col-lg-10">
+                            <span class="col-lg-10" t-field="rt_helpdesk_record_ticket.res_name"/>
+                        </span>
+                    </div>
+
+                    <!-- <div class="row mb-3">
+                        <strong class="col-lg-2">Email From: </strong>
+                        <a t-attf-href="mailto:{{rt_helpdesk_record_ticket.email_from}}" t-if="rt_helpdesk_record_ticket.email_from">
+<span class="col-lg-10" t-field="rt_helpdesk_record_ticket.email_from"/>
+</a>
+
+                    </div>
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Phone: </strong>
+                        <a t-attf-href="tel:{{rt_helpdesk_record_ticket.phone}}" t-if="rt_helpdesk_record_ticket.phone">
+<span class="col-lg-10" t-field="rt_helpdesk_record_ticket.phone"/>
+</a>
+
+                    </div>
+
+                    <div class="row mb-3">
+                        <strong class="col-lg-2">Mobile: </strong>
+                        <a t-attf-href="tel:{{rt_helpdesk_record_ticket.mobile}}" t-if="rt_helpdesk_record_ticket.mobile">
+<span class="col-lg-10" t-field="rt_helpdesk_record_ticket.mobile"/>
+</a>
+                    </div>
+
+
+                    <div class="row mb-3" t-if="rt_helpdesk_record_ticket.res_name">
+                        <strong class="col-lg-2">Document Name: </strong>
+<span class="col-lg-10" t-field="rt_helpdesk_record_ticket.res_name"/>
+
+                    </div> -->
+
+
+
+
+                   <div class="row mb-3" name="description">
+                        <strong class="col-lg-2">Description</strong>
+                        <div t-if="not is_html_empty(rt_helpdesk_record_ticket.description_html)" class="col-lg-10" t-field="rt_helpdesk_record_ticket.description_html"/>
+                        <div t-else="" class="col-lg-10">
+                            <em class="text-muted"><small>No description</small></em>
+                        </div>
+                    </div>
+                </t>
+            </t>
+
+
+
+            <div class="o_portal_messages_container mt32">
+                <h4>Message and communication history</h4>
+                <t t-call="portal.message_thread">
+                    <t t-set="token" t-value="rt_helpdesk_record_ticket.access_token"/>
+                    <t t-set="object" t-value="rt_helpdesk_record_ticket"/>
+                    <t t-set="pid" t-value="pid"/>
+                    <t t-set="hash" t-value="hash"/>
+<!--                    <t t-set="disable_composer" t-value="rt_helpdesk_record_ticket.stage_id.is_closed"/>
+-->                </t>
+            </div>
+        </t>
+    </template>
+
+
+
+
+
+    <template id="portal_my_ticket_page_2" 
+    name="My Ticket Page"
+    inherit_id="portal.portal_sidebar" primary="True">
+
+    <xpath expr="//div[hasclass('o_portal_sidebar')]" position="inside">
+        <t t-set="title" t-value="rt_helpdesk_record_ticket.name"/>
+        <t t-set="o_portal_fullwidth_alert" groups="rt_helpdesk.rt_helpdesk_group_helpdesk_user">
+            <t t-call="portal.portal_back_in_edit_mode">
+                <t t-set="backend_url" t-value="'/web#model=rt.helpdesk.ticket&amp;id=%s&amp;action=%s&amp;view_type=form' % (rt_helpdesk_record_ticket.id, rt_helpdesk_record_ticket.env.ref('rt_helpdesk.rt_helpdesk_action_ticket_tree_view').id)"/>
+            </t>
+        </t>
+
+
+        <div class="row">
+            <t t-call="portal.portal_record_sidebar">
+                <t t-set="classes" t-value="'col-lg-3 col-xl-4 d-print-none'"/>
+
+                <t t-set="entries">
+                    <div class="d-flex flex-wrap flex-column gap-4">
+                        <div id="ticket-nav" class="d-flex align-items-center flex-grow-1 p-0" t-ignore="true" role="complementary">
+                            <ul class="nav flex-column">
+                                <li class="nav-item" id="nav-header">
+                                    <a class="nav-link p-0" href="#card_header">
+                                        Ticket
+                                    </a>
+                                </li>
+                                <li class="nav-item" id="nav-chat">
+                                    <a class="nav-link p-0" href="#ticket_chat">
+                                        History
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+
+                        <div t-if="rt_helpdesk_record_ticket.partner_id" class="d-flex flex-column gap-4">
+                            <div class="col-12 d-flex flex-column">
+                                <h6><small class="text-muted">Customer</small></h6>
+
+                                <div class="o_portal_contact_details d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-start align-items-center gap-2">
+                                        <img class="o_avatar o_portal_contact_img rounded" t-att-src="image_data_uri(rt_helpdesk_record_ticket.partner_id.sudo().avatar_512)"/>
+                                        <h6 class="mb-0" t-out="rt_helpdesk_record_ticket.partner_id.sudo().name"></h6>
+                                    </div>
+                                    <div t-field="rt_helpdesk_record_ticket.partner_id" t-options='{"widget": "contact", "fields": ["email", "phone"]}'/>
+                                </div>
+                  
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+              <!-- Page content -->
+
+            <div id="ticket_content" class="o_portal_content col-12 col-lg-9 col-xl-8">
+                <div id="card">
+                    <div id="card_header" data-anchor="true">
+                        <div class="row justify-content-between align-items-end mb-3">
+                            <div class="col-12 col-md-9">
+                                <div class="d-flex align-items-center gap-2">
+                                    <h3 t-field="rt_helpdesk_record_ticket.name" class="text-truncate my-0"/>
+                                    
+                                    <!-- <small class="text-muted d-none d-md-inline align-self-end">(#<span t-field="rt_helpdesk_record_ticket.ticket_number"/>)</small> -->
+
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <small class="text-end">Stage:</small>
+                                <span t-if="rt_helpdesk_record_ticket.stage_id" 
+                                t-field="rt_helpdesk_record_ticket.stage_id.partner_stage_name" 
+                                class=" badge rounded-pill" 
+                                t-attf-style="#{'background: %s' %(rt_helpdesk_record_ticket.stage_id.partner_stage_color_html)};color:#fff"
+                                title="Current stage of this ticket"/>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div id="card_body">
+                        <!-- <div class="float-end">
+                            <t t-call="project.portal_my_tasks_state_widget_template">
+                                <t t-set="path" t-value="'task'"/>
+                            </t>
+                        </div> -->
+                        <div class="row mb-4 container">
+                            <div class="col-12 col-md-6 flex-grow-1">
+
+                                <div>
+                                    <h2>
+                                        <strong>Ticket Number:</strong> <span t-field="rt_helpdesk_record_ticket.ticket_number"/>
+                                    </h2>
+                                </div>
+
+                                <div><strong>Creation Date:</strong> <span t-field="rt_helpdesk_record_ticket.create_date" 
+                                    t-options='{"widget": "datetime", "hide_seconds": True}'/>
+                                </div>
+
+                                <div t-if="rt_helpdesk_record_ticket.email_from">
+                                    <strong>Email From:</strong> 
+                                    <a t-attf-href="mailto:{{rt_helpdesk_record_ticket.email_from}}">                                    
+                                        <span t-field="rt_helpdesk_record_ticket.email_from"/>
+                                    </a>
+                                </div>
+
+                                <div t-if="rt_helpdesk_record_ticket.phone">
+                                    <strong>Phone:</strong> 
+                                    <a t-attf-href="tel:{{rt_helpdesk_record_ticket.phone}}">                                    
+                                        <span t-field="rt_helpdesk_record_ticket.phone"/>
+                                    </a>
+                                </div>
+
+                                <div t-if="rt_helpdesk_record_ticket.mobile">
+                                    <strong>Mobile:</strong>
+                                    <a t-attf-href="tel:{{rt_helpdesk_record_ticket.mobile}}">
+                                        <span t-field="rt_helpdesk_record_ticket.mobile"/>
+                                    </a>
+                                </div>
+
+                                <div t-if="rt_helpdesk_record_ticket.sudo().product_id">
+                                    <strong>Product:</strong> <span t-field="rt_helpdesk_record_ticket.sudo().product_id"/>
+                                </div>
+                                
+                                <div t-if="rt_helpdesk_record_ticket.res_name">
+                                    <strong>Document Name:</strong> <span t-field="rt_helpdesk_record_ticket.res_name"/>
+                                </div>                                
+
+                            </div>
+                            <!-- <div class="col-12 col-md-6 d-empty-none" name="portal_my_task_second_column"></div> -->
+                        </div>
+
+                        <div class="row" t-if="not is_html_empty(rt_helpdesk_record_ticket.description_html)">
+                            <div class="col-12 mb-4 mb-md-0 col-lg-12">
+                                <hr class="mb-1"/>
+                                <div class="d-flex my-2">
+                                    <h5>Description</h5>
+                                </div>
+                                <div class="py-1 px-2 bg-100 small" t-field="rt_helpdesk_record_ticket.description_html"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              <!-- chatter -->
+                <hr/>
+                <div id="ticket_chat" data-anchor="true">
+                    <h3>Communication history</h3>
+                    <t t-call="portal.message_thread">
+                        <t t-set="token" t-value="rt_helpdesk_record_ticket.access_token"/>
+                    </t>
+                </div>
+            </div>
+      <!-- Page content  #ticket_content  -->
+
+        </div>
+
+    </xpath>
+
+
+    </template>
+
+
+
+
+    </data>
+</odoo>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <!-- 
+        This template is for a table at the top of activity views 
+        that shows some KPIs. 
+    -->
+
+    <t t-name="rt_helpdesk.RTHelpdeskDashboard" owl="1">
+        <span class="js_cls_rt_helpdesk_view_dashboard_wrapper_span">
+            <div class="js_cls_rt_helpdesk_view_dashboard_wrapper container-fluid">
+                <div class="alert alert-info d-flex p-2 mt-3">
+		        <button type="button" class="btn btn-link" 
+                    t-ref="dashboard_show_button"
+                    t-on-click.stop.prevent="onClickShowDashboard">
+                    <strong t-out="this.state.css.view_dashboard_show_toggle_button_string"/>
+                </button>
+
+              <ul class="nav nav-tabs js_cls_rt_helpdesk_view_dashboard_nav_tabs d-flex" 
+    t-attf-style="display: #{this.state.css.view_dashboard_style_display_property_value}"
+    t-ref="dashboard_nav_tabs"
+    role="tablist">
+
+    <li class="nav-item">
+                            <a
+                                t-attf-class="nav-link {{ this.state.css.view_dashboard_active_tab.includes('data') ? 'active show' : ''}}"
+                                id="rt_helpdesk_view_dashboard_tab_data"
+                                t-on-click.stop.prevent="() => this.onClickViewDashboardNavTabAnchor('data active show')"
+                                data-js_tab_name="data active show"
+                                data-bs-toggle="tab"
+                                href="#rt_helpdesk_view_dashboard_tabpanel_data"
+                                role="tab"
+                                aria-controls="rt_helpdesk_view_dashboard_tabpanel_data"
+                                aria-selected="true"
+                            >
+                                Data
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a
+                                t-attf-class="nav-link {{ this.state.css.view_dashboard_active_tab.includes('graph') ? 'active show' : ''}}"
+                                id="rt_helpdesk_view_dashboard_tab_graph"
+                                t-on-click.stop.prevent="() => this.onClickViewDashboardNavTabAnchor('graph active show')"
+                                data-js_tab_name="graph active show"
+                                data-bs-toggle="tab"
+                                href="#rt_helpdesk_view_dashboard_tabpanel_graph"
+                                role="tab"
+                                aria-controls="rt_helpdesk_view_dashboard_tabpanel_graph"
+                                aria-selected="false"
+                            >
+                                Graph
+                            </a>
+                        </li>
+                    </ul> 
+    
+                </div>
+    
+                <section class="js_cls_rt_helpdesk_view_dashboard_section" 
+                    t-ref="dashboard_section"
+                    t-attf-style="display: #{this.state.css.view_dashboard_style_display_property_value}" 
+                    id="minimal-statistics">
+                    <div class="tab-content">
+                        <div 
+                        t-attf-class="tab-pane fade {{ this.state.css.view_dashboard_active_tab.includes('data') ? 'active show' : ''}}"
+                        id="rt_helpdesk_view_dashboard_tabpanel_data" 
+                        role="tabpanel" 
+                        aria-labelledby="rt_helpdesk_view_dashboard_tab_data">
+                            <div class="row">
+                                <t t-foreach="this.state.infos.list_of_stage_id_count_dic" t-as="stage_id_count_dic"  t-key="stage_id_count_dic_index">
+                                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-6">
+                                        <div class="card" t-attf-style="background:#{stage_id_count_dic.color_html};color:#fff">
+                                            <div class="card-content">
+                                                <div class="card-body">
+                                                    <div class="media">
+                                                        <div class="media-body text-left">
+                                                            <div class="rt_name_count">
+                                                                <h3 t-attf-style="color:#{stage_id_count_dic.color_html};">
+                                                                    <span t-esc="stage_id_count_dic.count" />
+                                                                </h3>
+                                                                <span t-esc="stage_id_count_dic.name" />
+                                                            </div>    
+                                                            <div class="rt_stage_name" t-attf-style="border-top-color:#{stage_id_count_dic.color_html};">
+                                                                <span>Stage</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+    
+                                <t t-foreach="this.state.infos.list_of_direction_count_dic" t-as="direction_count_dic"  t-key="direction_count_dic_index">
+                                    <div class="col-xl-2 col-lg-2 col-md-3 col-sm-4 col-6">
+                                        <div t-attf-class="card #{direction_count_dic.classes}" style="color: #fff;">
+                                            <div class="card-content">
+                                                <div class="card-body">
+                                                    <div class="media">
+                                                        <div class="media-body text-left">
+                                                            <div class="rt_name_count">
+                                                                <h3>
+                                                                    <span t-esc="direction_count_dic.count" />
+                                                                </h3>                                                                
+                                                                <span t-esc="direction_count_dic.name" />
+                                                            </div>
+                                                            <div class="rt_stage_name">
+                                                                <span>Direction</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                        <div 
+                        t-attf-class="tab-pane fade {{ this.state.css.view_dashboard_active_tab.includes('graph') ? 'active show' : ''}}"                        
+                        id="rt_helpdesk_view_dashboard_tabpanel_graph" role="tabpanel" 
+                        aria-labelledby="rt_helpdesk_view_dashboard_tab_graph">
+                            <div class="row">
+                                <div class="chart-container" style="position: relative; height: 500px; width: 50%;">
+                                    <canvas t-ref="canvas_stage_id" 
+                                    class="js_cls_rt_helpdesk_canvas_stage_id"></canvas>
+                                </div>
+    
+                                <div class="chart-container" style="position: relative; height: 500px; width: 50%;">
+                                    <canvas t-ref="canvas_direction" 
+                                    class="js_cls_rt_helpdesk_canvas_direction"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">.C..</div>
+                    </div>
+                </section>
+            </div>
+        </span>
+    </t>
+</templates>
